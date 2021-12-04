@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GnucashLib.Models
 {
@@ -12,5 +13,6 @@ namespace GnucashLib.Models
 		public string Description { get; set; }
 
 		public virtual Commodity Currency { get; set; }
+		public virtual ICollection<Split> Splits { get; set; }
 	}
 }

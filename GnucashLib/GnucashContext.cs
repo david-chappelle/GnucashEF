@@ -52,7 +52,7 @@ namespace GnucashLib
 				e.Property(t => t.Placeholder).HasColumnName("placeholder");
 
 				e.HasOne(a => a.Commodity).WithMany().HasForeignKey(a => a.CommodityId);
-				e.HasOne(a => a.ParentAccount).WithMany().HasForeignKey(a => a.ParentGuid);
+				e.HasOne(a => a.ParentAccount).WithMany(pa => pa.ChildAccounts).HasForeignKey(a => a.ParentGuid);
 			});
 
 			modelBuilder.Entity<Commodity>(e =>
@@ -158,8 +158,8 @@ namespace GnucashLib
 				e.Property(s => s.QuantityDenominator).HasColumnName("quantity_denom").IsRequired();
 				e.Property(s => s.LotId).HasColumnName("lot_guid");
 
-				e.HasOne(s => s.Transaction).WithMany().HasForeignKey(s => s.TransactionId);
-				e.HasOne(s => s.Account).WithMany().HasForeignKey(s => s.AccountId);
+				e.HasOne(s => s.Transaction).WithMany(t => t.Splits).HasForeignKey(s => s.TransactionId);
+				e.HasOne(s => s.Account).WithMany(a => a.Splits).HasForeignKey(s => s.AccountId);
 			});
 
 			modelBuilder.Entity<Lot>(e =>

@@ -19,5 +19,7 @@ namespace GnucashLib.Models
 		public virtual Commodity Commodity { get; set; }
 		public virtual Account ParentAccount { get; set; }
 		public virtual IEnumerable<Slot> Slots { get; set; }
+		public virtual ICollection<Split> Splits { get; set; }
+		public ICollection<Account> ChildAccounts { get; set; }
 	}
 }

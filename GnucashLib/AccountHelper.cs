@@ -24,7 +24,7 @@ namespace GnucashLib
 				if (account == null)
 					break;
 
-				account = context.Accounts.FirstOrDefault(a => a.Name == accountName && a.ParentAccount == account);
+				account = context.Accounts.Include(a => a.ChildAccounts).FirstOrDefault(a => a.Name == accountName && a.ParentAccount == account);
 			}
 
 			return account;
