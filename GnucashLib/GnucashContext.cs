@@ -151,7 +151,7 @@ namespace GnucashLib
 				e.Property(s => s.TransactionId).HasColumnName("tx_guid").IsRequired();
 				e.Property(s => s.AccountId).HasColumnName("account_guid").IsRequired();
 				e.Property(s => s.Memo).HasColumnName("memo").IsRequired();
-				e.Property(s => s.Action).HasColumnName("action").IsRequired();
+				e.Property(s => s.ActionName).HasColumnName("action").IsRequired();
 				e.Property(s => s.ReconcileState).HasColumnName("reconcile_state").IsRequired();
 				e.Property(s => s.ReconcileDate).HasColumnName("reconcile_date");
 				e.Property(s => s.ValueNumerator).HasColumnName("value_num").IsRequired();
