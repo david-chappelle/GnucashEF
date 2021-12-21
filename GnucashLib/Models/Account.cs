@@ -20,6 +20,6 @@ namespace GnucashLib.Models
 		public virtual Account ParentAccount { get; set; }
 		public virtual IEnumerable<Slot> Slots { get; set; }
 		public virtual ICollection<Split> Splits { get; set; }
-		public ICollection<Account> ChildAccounts { get; set; }
+		public virtual ICollection<Account> ChildAccounts { get; set; }
 	}
 }
