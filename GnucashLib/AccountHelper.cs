@@ -10,6 +10,8 @@ namespace GnucashLib
 	{
 		public static Account AccountFromAbsolutePath(this GnucashContext context, string accountPath)
 		{
+			var s = context.Accounts.Where(a => a.AccountType == AccountType.ROOT && a.Name == "Root Account");
+
 			var systemRootaccount = context.Accounts.FirstOrDefault(a => a.AccountType == AccountType.ROOT);
 			return context.AccountFromRelativePath(systemRootaccount, accountPath);
 		}
@@ -24,10 +26,57 @@ namespace GnucashLib
 				if (account == null)
 					break;
 
-				account = context.Accounts.Include(a => a.ChildAccounts).FirstOrDefault(a => a.Name == accountName && a.ParentAccount == account);
+				account = context.Accounts.FirstOrDefault(a => a.Name == accountName && a.ParentAccount == account);
 			}
 
 			return account;
+		}
+
+		public static IEnumerable<Account> AccountRecursive(this GnucashContext db, string rootAccountPath)
+		{
+			var accounts = new List<Account>();
+			var rootAccount = db.AccountFromAbsolutePath(rootAccountPath);
+			if (rootAccount == null)
+				return Array.Empty<Account>();
+
+			accounts.Add(rootAccount);
+			db.getChildAccounts(rootAccount, accounts);
+
+			return accounts;
+		}
+
+		private static void getChildAccounts(this GnucashContext db, Account parentAccount, List<Account> accounts)
+		{
+			if (parentAccount == null)
+				return;
+
+			foreach (var account in parentAccount.ChildAccounts.ToArray())
+			{
+				accounts.Add(account);
+				db.getChildAccounts(account, accounts);
+			}
+		}
+
+		public static string? AccountIdFromAbsolutePath(this GnucashContext context, string accountPath)
+		{
+			if (string.IsNullOrWhiteSpace(accountPath))
+				return null;
+
+			var s = context.Accounts.Where(a => a.AccountType == AccountType.ROOT);
+
+			var parentAccountId = context.Accounts.Single(a => a.AccountType == AccountType.ROOT && a.Name == "Root Account").AccountId;
+			var accountNameSegments = accountPath.Split(':');
+			string? accountId = null;
+			foreach (var name in accountNameSegments)
+			{
+				accountId = context.Accounts.SingleOrDefault(a => a.ParentGuid == parentAccountId && a.Name == name)?.AccountId;
+				if (accountId == null)
+					break;
+
+				parentAccountId = accountId;
+			}
+
+			return accountId;
 		}
 	}
 
@@ -50,5 +99,6 @@ namespace GnucashLib
 	{
 		public const string BUY = "Buy";
 		public const string SELL = "Sell";
+		public const string FEE = "Fee";
 	}
 }
