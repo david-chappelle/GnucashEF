@@ -30,7 +30,9 @@ namespace GnucashLib
 				DataSource = DatabaseFile
 			}.ToString();
 
-			opt.UseSqlite(new SqliteConnection(cs));
+			opt
+				.UseLazyLoadingProxies()
+				.UseSqlite(new SqliteConnection(cs));
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
