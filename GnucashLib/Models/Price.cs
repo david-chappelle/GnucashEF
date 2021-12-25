@@ -13,6 +13,8 @@ namespace GnucashLib.Models
 		public long ValueNumerator { get; set; }
 		public long ValueDenominator { get; set; }
 
+		public decimal Value => decimal.Divide(ValueNumerator, ValueDenominator);
+
 		public virtual Commodity Commodity { get; set; }
 		public virtual Commodity Currency { get; set; }
 	}
