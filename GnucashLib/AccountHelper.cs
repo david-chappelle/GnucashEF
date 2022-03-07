@@ -10,8 +10,6 @@ namespace GnucashLib
 	{
 		public static Account AccountFromAbsolutePath(this GnucashContext context, string accountPath)
 		{
-			var s = context.Accounts.Where(a => a.AccountType == AccountType.ROOT && a.Name == "Root Account");
-
 			var systemRootaccount = context.Accounts.FirstOrDefault(a => a.AccountType == AccountType.ROOT);
 			return context.AccountFromRelativePath(systemRootaccount, accountPath);
 		}
