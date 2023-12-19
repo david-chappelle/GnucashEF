@@ -1,5 +1,4 @@
-﻿using System;
-using GnucashLib.Models;
+﻿using GnucashLib.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +14,9 @@ namespace GnucashLib
 		public DbSet<Transaction> Transactions { get; set; }
 		public DbSet<Split> Splits { get; set; }
 		public DbSet<Lot> Lots { get; set; }
+		public DbSet<Slot> Slots { get; set; }
+		public DbSet<Models.Version> Versions { get; set; }
+		public DbSet<Book> Books { get; set; }
 
 		public string DatabaseFile { get; private set; }
 
@@ -172,6 +174,46 @@ namespace GnucashLib
 				e.Property(l => l.LotId).HasColumnName("guid").IsRequired();
 				e.Property(l => l.AccountId).HasColumnName("account_guid");
 				e.Property(l => l.IsClosed).HasColumnName("is_closed").IsRequired();
+			});
+
+			modelBuilder.Entity<Slot>(e =>
+			{
+				e.ToTable("slots");
+				e.HasKey(s => s.SlotId);
+
+				e.Property(s => s.SlotId).HasColumnName("id").IsRequired();
+				e.Property(s => s.ObjectId).HasColumnName("obj_guid").IsRequired();
+				e.Property(s => s.Name).HasColumnName("name").IsRequired();
+				e.Property(s => s.RawType).HasColumnName("slot_type").IsRequired();
+				e.Property(s => s.LongVal).HasColumnName("int64_val");
+				e.Property(s => s.StringVal).HasColumnName("string_val");
+				e.Property(s => s.DoubleVal).HasColumnName("double_val");
+				e.Property(s => s.DateTimeValRaw).HasColumnName("timespec_val");
+				e.Property(s => s.IdVal).HasColumnName("guid_val");
+				e.Property(s => s.NumeratorVal).HasColumnName("numeric_val_num");
+				e.Property(s => s.DenominatorVal).HasColumnName("numeric_val_denom");
+				e.Property(s => s.DateValRaw).HasColumnName("gdate_val");
+
+				e.HasOne(s => s.Account).WithMany(a => a.Slots).HasForeignKey(s => s.ObjectId);
+			});
+
+			modelBuilder.Entity<GnucashLib.Models.Version>(e =>
+			{
+				e.ToTable("versions");
+				e.HasNoKey();
+				e.Property(v => v.TableName).HasColumnName("table_name").IsRequired();
+				e.Property(v => v.TableVersion).HasColumnName("table_version").IsRequired();
+			});
+
+			modelBuilder.Entity<Book>(e =>
+			{
+				e.ToTable("books");
+				e.HasKey(b => b.BookId);
+				e.Property(b => b.BookId).HasColumnName("guid").IsRequired();
+				e.Property(b => b.RootAccountId).HasColumnName("root_account_guid").IsRequired();
+				e.Property(b => b.RootTemplateId).HasColumnName("root_template_guid").IsRequired();
+				e.HasOne(b => b.RootAccount).WithMany().HasForeignKey(b => b.RootAccountId);
+				e.HasOne(b => b.RootTemplateAccount).WithMany().HasForeignKey(b => b.RootTemplateId);
 			});
 		}
 	}

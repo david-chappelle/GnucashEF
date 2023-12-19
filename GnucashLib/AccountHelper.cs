@@ -55,7 +55,7 @@ namespace GnucashLib
 			}
 		}
 
-		public static string? AccountIdFromAbsolutePath(this GnucashContext context, string accountPath)
+		public static string AccountIdFromAbsolutePath(this GnucashContext context, string accountPath)
 		{
 			if (string.IsNullOrWhiteSpace(accountPath))
 				return null;
@@ -64,7 +64,7 @@ namespace GnucashLib
 
 			var parentAccountId = context.Accounts.Single(a => a.AccountType == AccountType.ROOT && a.Name == "Root Account").AccountId;
 			var accountNameSegments = accountPath.Split(':');
-			string? accountId = null;
+			string accountId = null;
 			foreach (var name in accountNameSegments)
 			{
 				accountId = context.Accounts.SingleOrDefault(a => a.ParentGuid == parentAccountId && a.Name == name)?.AccountId;
