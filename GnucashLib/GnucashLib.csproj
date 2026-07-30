@@ -10,6 +10,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
+
+    <!-- Overrides the vulnerable 2.1.11 native SQLite pulled in transitively by
+       Microsoft.Data.Sqlite (GHSA-2m69-gcr7-jv3q / CVE-2025-6965).
+       Remove once EF Core ships against SQLitePCLRaw 3.x. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+
   </ItemGroup>
 
 </Project>
