@@ -1,6 +1,6 @@
 ﻿namespace GnucashLib.Models
 {
-	public class Commodity
+	public class GncCommodity
 	{
 		public string CommodityId { get; set; }
 		public string Namespace { get; set; }

@@ -6,17 +6,17 @@ namespace GnucashLib
 {
 	public class GnucashContext : DbContext
 	{
-		public DbSet<Account> Accounts { get; set; }
-		public DbSet<Commodity> Commodities { get; set; }
-		public DbSet<Price> Prices { get; set; }
-		public DbSet<Schedule> Schedules { get; set; }
-		public DbSet<ScheduledTransaction> ScheduledTransactions { get; set; }
-		public DbSet<Transaction> Transactions { get; set; }
-		public DbSet<Split> Splits { get; set; }
-		public DbSet<Lot> Lots { get; set; }
-		public DbSet<Slot> Slots { get; set; }
-		public DbSet<Models.Version> Versions { get; set; }
-		public DbSet<Book> Books { get; set; }
+		public DbSet<GncAccount> Accounts { get; set; }
+		public DbSet<GncCommodity> Commodities { get; set; }
+		public DbSet<GncPrice> Prices { get; set; }
+		public DbSet<GncSchedule> Schedules { get; set; }
+		public DbSet<GncScheduledTransaction> ScheduledTransactions { get; set; }
+		public DbSet<GncTransaction> Transactions { get; set; }
+		public DbSet<GncSplit> Splits { get; set; }
+		public DbSet<GncLot> Lots { get; set; }
+		public DbSet<GncSlot> Slots { get; set; }
+		public DbSet<Models.GncVersion> Versions { get; set; }
+		public DbSet<GncBook> Books { get; set; }
 
 		public string DatabaseFile { get; private set; }
 
@@ -39,7 +39,7 @@ namespace GnucashLib
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Account>(e =>
+			modelBuilder.Entity<GncAccount>(e =>
 			{
 				e.ToTable("accounts");
 				e.HasKey(t => t.AccountId);
@@ -59,7 +59,7 @@ namespace GnucashLib
 				e.HasOne(a => a.ParentAccount).WithMany(pa => pa.ChildAccounts).HasForeignKey(a => a.ParentGuid);
 			});
 
-			modelBuilder.Entity<Commodity>(e =>
+			modelBuilder.Entity<GncCommodity>(e =>
 			{
 				e.ToTable("commodities");
 				e.HasKey(t => t.CommodityId);
@@ -75,7 +75,7 @@ namespace GnucashLib
 				e.Property(t => t.QuoteTimezone).HasColumnName("quote_tz");
 			});
 
-			modelBuilder.Entity<Price>(e =>
+			modelBuilder.Entity<GncPrice>(e =>
 			{
 				e.ToTable("prices");
 				e.HasKey(p => p.PriceId);
@@ -93,7 +93,7 @@ namespace GnucashLib
 				e.HasOne(p => p.Currency).WithMany().HasForeignKey(p => p.CurrencyId);
 			});
 
-			modelBuilder.Entity<Schedule>(e =>
+			modelBuilder.Entity<GncSchedule>(e =>
 			{
 				e.ToTable("recurrences");
 				e.HasKey(s => s.ScheduleId);
@@ -108,7 +108,7 @@ namespace GnucashLib
 				e.HasOne(s => s.ScheduledTransaction).WithMany().HasForeignKey(s => s.ObjectId);
 			});
 
-			modelBuilder.Entity<ScheduledTransaction>(e =>
+			modelBuilder.Entity<GncScheduledTransaction>(e =>
 			{
 				e.ToTable("schedxactions");
 				e.HasKey(s => s.ScheduledTransactionId);
@@ -129,7 +129,7 @@ namespace GnucashLib
 				e.Property(s => s.TemplateId).HasColumnName("template_act_guid").IsRequired();
 			});
 
-			modelBuilder.Entity<Transaction>(e =>
+			modelBuilder.Entity<GncTransaction>(e =>
 			{
 				e.ToTable("transactions");
 				e.HasKey(t => t.TransactionId);
@@ -144,7 +144,7 @@ namespace GnucashLib
 				e.HasOne(t => t.Currency).WithMany().HasForeignKey(t => t.CurrencyId);
 			});
 
-			modelBuilder.Entity<Split>(e =>
+			modelBuilder.Entity<GncSplit>(e =>
 			{
 				e.ToTable("splits");
 				e.HasKey(s => s.SplitId);
@@ -166,7 +166,7 @@ namespace GnucashLib
 				e.HasOne(s => s.Account).WithMany(a => a.Splits).HasForeignKey(s => s.AccountId);
 			});
 
-			modelBuilder.Entity<Lot>(e =>
+			modelBuilder.Entity<GncLot>(e =>
 			{
 				e.ToTable("lots");
 				e.HasKey(l => l.LotId);
@@ -176,7 +176,7 @@ namespace GnucashLib
 				e.Property(l => l.IsClosed).HasColumnName("is_closed").IsRequired();
 			});
 
-			modelBuilder.Entity<Slot>(e =>
+			modelBuilder.Entity<GncSlot>(e =>
 			{
 				e.ToTable("slots");
 				e.HasKey(s => s.SlotId);
@@ -197,7 +197,7 @@ namespace GnucashLib
 				e.HasOne(s => s.Account).WithMany(a => a.Slots).HasForeignKey(s => s.ObjectId);
 			});
 
-			modelBuilder.Entity<GnucashLib.Models.Version>(e =>
+			modelBuilder.Entity<GnucashLib.Models.GncVersion>(e =>
 			{
 				e.ToTable("versions");
 				e.HasNoKey();
@@ -205,7 +205,7 @@ namespace GnucashLib
 				e.Property(v => v.TableVersion).HasColumnName("table_version").IsRequired();
 			});
 
-			modelBuilder.Entity<Book>(e =>
+			modelBuilder.Entity<GncBook>(e =>
 			{
 				e.ToTable("books");
 				e.HasKey(b => b.BookId);

@@ -2,7 +2,7 @@
 
 namespace GnucashLib.Models
 {
-	public class Split
+	public class GncSplit
 	{
 		public string SplitId { get; set; }
 		public string TransactionId { get; set; }
@@ -19,17 +19,17 @@ namespace GnucashLib.Models
 
 		public decimal Value => decimal.Divide(ValueNumerator, ValueDenominator);
 		public decimal Quantity => decimal.Divide(QuantityNumerator, QuantityDenominator);
-		public ActionType? Action => ActionName switch
+		public GncActionType? Action => ActionName switch
 		{
-			ACTION_SELL => ActionType.Sell,
-			ACTION_BUY => ActionType.Buy,
-			ACTION_FEE => ActionType.Fee,
-			ACTION_DIVIDEND => ActionType.Dividend,
+			ACTION_SELL => GncActionType.Sell,
+			ACTION_BUY => GncActionType.Buy,
+			ACTION_FEE => GncActionType.Fee,
+			ACTION_DIVIDEND => GncActionType.Dividend,
 			_ => null
 		};
 
-		public virtual Transaction Transaction { get; set; }
-		public virtual Account Account { get; set; }
+		public virtual GncTransaction Transaction { get; set; }
+		public virtual GncAccount Account { get; set; }
 		// TODO: lot
 
 		public const string ACTION_SELL = "Sell";
@@ -38,7 +38,7 @@ namespace GnucashLib.Models
 		public const string ACTION_DIVIDEND = "Dividend";
 	}
 
-	public enum ActionType
+	public enum GncActionType
 	{
 		Sell,
 		Buy,

@@ -2,7 +2,7 @@
 
 namespace GnucashLib.Models
 {
-	public class Account
+	public class GncAccount
 	{
 		public string AccountId { get; set; }
 		public string Name { get; set; }
@@ -16,10 +16,10 @@ namespace GnucashLib.Models
 		public bool Hidden { get; set; }
 		public bool Placeholder { get; set; }
 
-		public virtual Commodity Commodity { get; set; }
-		public virtual Account ParentAccount { get; set; }
-		public virtual ICollection<Slot> Slots { get; set; }
-		public virtual ICollection<Split> Splits { get; set; }
-		public virtual ICollection<Account> ChildAccounts { get; set; }
+		public virtual GncCommodity Commodity { get; set; }
+		public virtual GncAccount ParentAccount { get; set; }
+		public virtual ICollection<GncSlot> Slots { get; set; }
+		public virtual ICollection<GncSplit> Splits { get; set; }
+		public virtual ICollection<GncAccount> ChildAccounts { get; set; }
 	}
 }

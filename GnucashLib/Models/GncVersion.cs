@@ -1,6 +1,6 @@
 ﻿namespace GnucashLib.Models
 {
-	public class Version
+	public class GncVersion
 	{
 		public string TableName { get; set; }
 		public int TableVersion { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GnucashLib.Models
 {
-	public class Transaction
+	public class GncTransaction
 	{
 		public string TransactionId { get; set; }
 		public string CurrencyId { get; set; }
@@ -12,7 +12,7 @@ namespace GnucashLib.Models
 		public DateTime EnteredDate { get; set; }
 		public string Description { get; set; }
 
-		public virtual Commodity Currency { get; set; }
-		public virtual ICollection<Split> Splits { get; set; }
+		public virtual GncCommodity Currency { get; set; }
+		public virtual ICollection<GncSplit> Splits { get; set; }
 	}
 }

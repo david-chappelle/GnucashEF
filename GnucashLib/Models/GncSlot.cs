@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GnucashLib.Models
 {
-	public class Slot
+	public class GncSlot
 	{
 		public int SlotId { get; set; }
 		public string ObjectId { get; set; }
@@ -22,7 +22,7 @@ namespace GnucashLib.Models
 		public DateOnly? DateVal => DateValRaw.FromYYYYMMDD();
 		public DateTime? DateTimeVal => DateTimeValRaw.FromNormalDT();
 
-		public virtual Account Account { get; set; }
+		public virtual GncAccount Account { get; set; }
 
 		public object Object => SlotType switch
 		{

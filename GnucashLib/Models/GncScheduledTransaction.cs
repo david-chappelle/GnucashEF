@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GnucashLib.Models
 {
-	public class ScheduledTransaction
+	public class GncScheduledTransaction
 	{
 		public string ScheduledTransactionId { get; set; }
 		public string Name { get; set; }

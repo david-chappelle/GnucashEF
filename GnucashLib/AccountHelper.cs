@@ -8,13 +8,13 @@ namespace GnucashLib
 {
 	public static class AccountHelper
 	{
-		public static Account AccountFromAbsolutePath(this GnucashContext context, string accountPath)
+		public static GncAccount AccountFromAbsolutePath(this GnucashContext context, string accountPath)
 		{
 			var systemRootaccount = context.Accounts.FirstOrDefault(a => a.AccountType == AccountType.ROOT);
 			return context.AccountFromRelativePath(systemRootaccount, accountPath);
 		}
 
-		public static Account AccountFromRelativePath(this GnucashContext context, Account rootAccount, string relativePath)
+		public static GncAccount AccountFromRelativePath(this GnucashContext context, GncAccount rootAccount, string relativePath)
 		{
 			var accountNameSegments = relativePath.Split(':');
 			var account = rootAccount;
@@ -30,12 +30,12 @@ namespace GnucashLib
 			return account;
 		}
 
-		public static IEnumerable<Account> AccountRecursive(this GnucashContext db, string rootAccountPath)
+		public static IEnumerable<GncAccount> AccountRecursive(this GnucashContext db, string rootAccountPath)
 		{
-			var accounts = new List<Account>();
+			var accounts = new List<GncAccount>();
 			var rootAccount = db.AccountFromAbsolutePath(rootAccountPath);
 			if (rootAccount == null)
-				return Array.Empty<Account>();
+				return Array.Empty<GncAccount>();
 
 			accounts.Add(rootAccount);
 			db.getChildAccounts(rootAccount, accounts);
@@ -43,7 +43,7 @@ namespace GnucashLib
 			return accounts;
 		}
 
-		private static void getChildAccounts(this GnucashContext db, Account parentAccount, List<Account> accounts)
+		private static void getChildAccounts(this GnucashContext db, GncAccount parentAccount, List<GncAccount> accounts)
 		{
 			if (parentAccount == null)
 				return;

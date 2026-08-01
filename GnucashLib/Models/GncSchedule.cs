@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GnucashLib.Models
 {
-	public class Schedule
+	public class GncSchedule
 	{
 		public int ScheduleId { get; set; }
 		public string ObjectId { get; set; }
@@ -13,6 +13,6 @@ namespace GnucashLib.Models
 		public string Start { get; set; }
 		public string WeekendAdjustment { get; set; }
 
-		public virtual ScheduledTransaction ScheduledTransaction { get; set; }
+		public virtual GncScheduledTransaction ScheduledTransaction { get; set; }
 	}
 }

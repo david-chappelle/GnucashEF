@@ -2,7 +2,7 @@
 
 namespace GnucashLib.Models
 {
-	public class Price
+	public class GncPrice
 	{
 		public string PriceId { get; set; }
 		public string CommodityId { get; set; }
@@ -15,7 +15,7 @@ namespace GnucashLib.Models
 
 		public decimal Value => decimal.Divide(ValueNumerator, ValueDenominator);
 
-		public virtual Commodity Commodity { get; set; }
-		public virtual Commodity Currency { get; set; }
+		public virtual GncCommodity Commodity { get; set; }
+		public virtual GncCommodity Currency { get; set; }
 	}
 }
