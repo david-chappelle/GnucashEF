@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GnucashLib.Models
+namespace GncEF.Models
 {
 	public class GncAccount
 	{

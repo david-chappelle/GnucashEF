@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GnucashLib.Models
+namespace GncEF.Models
 {
 	public class GncTransaction
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GnucashLib.Models
+namespace GncEF.Models
 {
 	public class GncSplit
 	{

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GnucashLib.Models;
+using GncEF.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace GnucashLib
+namespace GncEF
 {
 	public static class AccountHelper
 	{
-		public static GncAccount AccountFromAbsolutePath(this GnucashContext context, string accountPath)
+		public static GncAccount AccountFromAbsolutePath(this GncContext context, string accountPath)
 		{
 			var systemRootaccount = context.Accounts.FirstOrDefault(a => a.AccountType == AccountType.ROOT);
 			return context.AccountFromRelativePath(systemRootaccount, accountPath);
 		}
 
-		public static GncAccount AccountFromRelativePath(this GnucashContext context, GncAccount rootAccount, string relativePath)
+		public static GncAccount AccountFromRelativePath(this GncContext context, GncAccount rootAccount, string relativePath)
 		{
 			var accountNameSegments = relativePath.Split(':');
 			var account = rootAccount;
@@ -30,7 +30,7 @@ namespace GnucashLib
 			return account;
 		}
 
-		public static IEnumerable<GncAccount> AccountRecursive(this GnucashContext db, string rootAccountPath)
+		public static IEnumerable<GncAccount> AccountRecursive(this GncContext db, string rootAccountPath)
 		{
 			var accounts = new List<GncAccount>();
 			var rootAccount = db.AccountFromAbsolutePath(rootAccountPath);
@@ -43,7 +43,7 @@ namespace GnucashLib
 			return accounts;
 		}
 
-		private static void getChildAccounts(this GnucashContext db, GncAccount parentAccount, List<GncAccount> accounts)
+		private static void getChildAccounts(this GncContext db, GncAccount parentAccount, List<GncAccount> accounts)
 		{
 			if (parentAccount == null)
 				return;
@@ -55,7 +55,7 @@ namespace GnucashLib
 			}
 		}
 
-		public static string AccountIdFromAbsolutePath(this GnucashContext context, string accountPath)
+		public static string AccountIdFromAbsolutePath(this GncContext context, string accountPath)
 		{
 			if (string.IsNullOrWhiteSpace(accountPath))
 				return null;

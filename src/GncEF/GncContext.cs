@@ -1,10 +1,10 @@
-﻿using GnucashLib.Models;
+﻿using GncEF.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace GnucashLib
+namespace GncEF
 {
-	public class GnucashContext : DbContext
+	public class GncContext : DbContext
 	{
 		public DbSet<GncAccount> Accounts { get; set; }
 		public DbSet<GncCommodity> Commodities { get; set; }
@@ -15,12 +15,12 @@ namespace GnucashLib
 		public DbSet<GncSplit> Splits { get; set; }
 		public DbSet<GncLot> Lots { get; set; }
 		public DbSet<GncSlot> Slots { get; set; }
-		public DbSet<Models.GncVersion> Versions { get; set; }
+		public DbSet<GncVersion> Versions { get; set; }
 		public DbSet<GncBook> Books { get; set; }
 
 		public string DatabaseFile { get; private set; }
 
-		public GnucashContext(string databaseFile)
+		public GncContext(string databaseFile)
 		{
 			DatabaseFile = databaseFile;
 		}
@@ -197,7 +197,7 @@ namespace GnucashLib
 				e.HasOne(s => s.Account).WithMany(a => a.Slots).HasForeignKey(s => s.ObjectId);
 			});
 
-			modelBuilder.Entity<GnucashLib.Models.GncVersion>(e =>
+			modelBuilder.Entity<GncVersion>(e =>
 			{
 				e.ToTable("versions");
 				e.HasNoKey();

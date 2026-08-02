@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GnucashLib.Models
+namespace GncEF.Models
 {
 	public class GncLot
 	{

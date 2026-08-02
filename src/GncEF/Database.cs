@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 
-namespace GnucashLib
+namespace GncEF
 {
 	public class Database
 	{

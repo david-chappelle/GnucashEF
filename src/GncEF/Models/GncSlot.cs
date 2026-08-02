@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GnucashLib.Models
+namespace GncEF.Models
 {
 	public class GncSlot
 	{

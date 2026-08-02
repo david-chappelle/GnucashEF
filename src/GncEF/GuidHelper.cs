@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GnucashLib
+namespace GncEF
 {
 	public static class GuidHelper
 	{

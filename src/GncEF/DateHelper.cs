@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GnucashLib
+namespace GncEF
 {
 	public static class DateHelper
 	{
