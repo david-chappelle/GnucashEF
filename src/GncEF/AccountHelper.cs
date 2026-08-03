@@ -16,6 +16,9 @@ namespace GncEF
 
 		public static GncAccount AccountFromRelativePath(this GncContext context, GncAccount rootAccount, string relativePath)
 		{
+			if (string.IsNullOrEmpty(relativePath))
+				return rootAccount;
+
 			var accountNameSegments = relativePath.Split(':');
 			var account = rootAccount;
 
@@ -60,8 +63,6 @@ namespace GncEF
 			if (string.IsNullOrWhiteSpace(accountPath))
 				return null;
 
-			var s = context.Accounts.Where(a => a.AccountType == AccountType.ROOT);
-
 			var parentAccountId = context.Accounts.Single(a => a.AccountType == AccountType.ROOT && a.Name == "Root Account").AccountId;
 			var accountNameSegments = accountPath.Split(':');
 			string accountId = null;
@@ -75,6 +76,30 @@ namespace GncEF
 			}
 
 			return accountId;
+		}
+
+		public static (long num, long denom) GetAccountValue(this GncContext context, GncAccount account, DateOnly? asOfDate = null)
+		{
+			return context.GetAccountValueChange(account, null, asOfDate);
+		}
+
+		public static (long num, long denom) GetAccountValueChange(this GncContext context, GncAccount account, DateOnly? startDate = null, DateOnly? endDate = null)
+		{
+			DateTime? start = startDate.HasValue ? new DateTime(startDate.Value, new TimeOnly(0,0,0)) : null;
+			DateTime? end = endDate.HasValue ? new DateTime(endDate.Value.AddDays(1), new TimeOnly(0,0,0)) : null;
+
+			var filteredSplits = context.Splits
+				.Where(s => s.AccountId == account.AccountId &&
+					(!start.HasValue || s.Transaction.PostDate >= start) &&
+					(!end.HasValue || s.Transaction.PostDate < end))
+				.OrderBy(s => s.Transaction.PostDate)
+				.AsNoTracking();
+
+			(long num, long denom) total = (0, account.CommodityFraction);
+			foreach (var s in filteredSplits)
+				total = AmountHelper.Add(total, (s.ValueNumerator, s.ValueDenominator));
+
+			return total;
 		}
 	}
 

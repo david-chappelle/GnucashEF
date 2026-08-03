@@ -19,6 +19,8 @@ namespace GncEF.Models
 
 		public decimal Value => decimal.Divide(ValueNumerator, ValueDenominator);
 		public decimal Quantity => decimal.Divide(QuantityNumerator, QuantityDenominator);
+		public (long num, long denom) ValueRatio => (ValueNumerator, ValueDenominator);
+		public (long num, long denom) QuantityRatio => (QuantityNumerator, QuantityDenominator);
 		public GncActionType? Action => ActionName switch
 		{
 			ACTION_SELL => GncActionType.Sell,
