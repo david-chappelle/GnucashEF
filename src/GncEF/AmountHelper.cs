@@ -83,6 +83,27 @@
 			return (normalizedNum, desiredDenominator);
 		}
 
+		public static bool AreEquivalent((long num, long denom) a, (long num, long denom) b)
+		{
+			// check for strict equality
+			if (a == b)
+				return true;
+
+			// check for equivalence
+			return a.num * b.denom == b.num * a.denom;
+		}
+
+		public static bool AreOffsetting((long num, long denom) a, (long num, long denom) b)
+		{
+			// check for strict negation
+			if (a == (-b.num,b.denom))
+				return true;
+
+
+			// check for negation equivalance
+			return a.num * b.denom == -b.num * a.denom;
+		}
+
 		private static long Pow(long x, long y)
 		{
 			long val = 1;
