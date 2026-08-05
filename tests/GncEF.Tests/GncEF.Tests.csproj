@@ -22,4 +22,11 @@
     <ProjectReference Include="..\..\src\GncEF\GncEF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\data\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>      
+    </None>
+  </ItemGroup>
+
 </Project>
