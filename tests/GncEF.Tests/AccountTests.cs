@@ -1,18 +1,9 @@
-using Xunit;
-using GncEF;
-using System.Data.Common;
-
 namespace GncEF.Tests;
 
 public class AccountTests : IDisposable
 {
-    private readonly GncContext _db;
+    private readonly GncContext _db = new GncContext(Path.Combine("data", "Test.gnucash"));
 
-    public AccountTests()
-    {
-        _db = new GncContext(Path.Combine("data", "Test.gnucash"));
-    }
-    
     [Fact]
     public void AccountValue()
     {
@@ -36,8 +27,6 @@ public class AccountTests : IDisposable
         // as of 2026-08-01
         var bal2 = _db.GetAccountValue(account, asOfDate: new DateOnly(2026,8,1));
         Assert.Equal((2593L, 100L), bal2);
-
-
     }
 
     [Fact]
@@ -46,21 +35,20 @@ public class AccountTests : IDisposable
         // change in value for 2026-08
         var startDate = new DateOnly(2026,8,1);
         var endDate = startDate.AddMonths(1).AddDays(-1);
+        var expectedSpending = (4087L, 100L);        
 
         var accountDining = _db.AccountFromAbsolutePath("Expenses:Dining");
         Assert.NotNull(accountDining);
         var amtSpent = _db.GetAccountValueChange(accountDining, startDate, endDate);
-        Assert.Equal((4087L, 100L), amtSpent);
+        Assert.True(AmountHelper.AreEquivalent(expectedSpending, amtSpent));
 
-        var accountCash = _db.AccountFromAbsolutePath("Assets:Current Assets:Cash in Wallet");
-        Assert.NotNull(accountCash);
-        var amtCashChange = _db.GetAccountValueChange(accountCash, startDate, endDate);
-        Assert.Equal((-4087L, 100L), amtCashChange);
+        var accountCard = _db.AccountFromAbsolutePath("Liabilities:Credit Card");
+        Assert.NotNull(accountCard);
+        var amtCardChange = _db.GetAccountValueChange(accountCard, startDate, endDate);
+        Assert.True(AmountHelper.AreOffsetting(expectedSpending, amtCardChange));
 
-        Assert.Equal(amtSpent.num, -amtCashChange.num);
-        Assert.Equal(amtSpent.denom, amtCashChange.denom);
- 
-    }
+        Assert.True(AmountHelper.AreOffsetting(amtSpent, amtCardChange));
+     }
 
     public void Dispose()
     {
