@@ -40,14 +40,14 @@ public class AccountTests : IDisposable
         var accountDining = _db.AccountFromAbsolutePath("Expenses:Dining");
         Assert.NotNull(accountDining);
         var amtSpent = _db.GetAccountValueChange(accountDining, startDate, endDate);
-        Assert.True(AmountHelper.AreEquivalent(expectedSpending, amtSpent));
+        Assert.True(expectedSpending.IsEquivalentTo(amtSpent));;
 
         var accountCard = _db.AccountFromAbsolutePath("Liabilities:Credit Card");
         Assert.NotNull(accountCard);
         var amtCardChange = _db.GetAccountValueChange(accountCard, startDate, endDate);
-        Assert.True(AmountHelper.AreOffsetting(expectedSpending, amtCardChange));
+        Assert.True(expectedSpending.IsOffsetTo(amtCardChange));
 
-        Assert.True(AmountHelper.AreOffsetting(amtSpent, amtCardChange));
+        Assert.True(amtSpent.IsOffsetTo(amtCardChange));
      }
 
     public void Dispose()

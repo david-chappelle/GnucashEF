@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace GncEF.Models
+﻿namespace GncEF.Models
 {
 	public class GncSlot
 	{
@@ -20,7 +17,7 @@ namespace GncEF.Models
 
 		public SlotTypes? SlotType => Enum.IsDefined(typeof(SlotTypes), RawType) ? (SlotTypes?)RawType : null;
 		public DateOnly? DateVal => DateValRaw.FromYYYYMMDD();
-		public DateTime? DateTimeVal => DateTimeValRaw.FromNormalDT();
+		public DateTime? DateTimeVal => DateTimeValRaw.FromNormalDateTime();
 
 		public virtual GncAccount Account { get; set; }
 

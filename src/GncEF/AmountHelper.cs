@@ -20,13 +20,9 @@
 				num = long.Parse(amt);
 				denom = 1;
 			}
-
-			// check for normalization needed to desired denominator
-			if (desiredFraction.HasValue && desiredFraction.Value != denom)
-			{
-				num = (num * desiredFraction.Value) / denom;
-				denom = desiredFraction.Value;
-			}
+			
+			if (desiredFraction.HasValue)
+				return Normalize(num, denom, desiredFraction.Value);
 
 			return (num, denom);
 		}
@@ -83,13 +79,23 @@
 			return (normalizedNum, desiredDenominator);
 		}
 
+		public static bool IsEquivalentTo(this (long num, long denom) a, (long num, long denom) b)
+		{
+			return AreEquivalent(a, b);
+		}
+
+		public static bool IsOffsetTo(this (long num, long denom) a, (long num, long denom) b)
+		{
+			return AreOffsetting(a, b);
+		}
+
 		public static bool AreEquivalent((long num, long denom) a, (long num, long denom) b)
 		{
 			// check for strict equality
 			if (a == b)
 				return true;
 
-			// check for equivalence
+			// check for equivalence using cross multiplication
 			return a.num * b.denom == b.num * a.denom;
 		}
 
@@ -99,8 +105,7 @@
 			if (a == (-b.num,b.denom))
 				return true;
 
-
-			// check for negation equivalance
+			// check for negation equivalance using cross multiplication
 			return a.num * b.denom == -b.num * a.denom;
 		}
 

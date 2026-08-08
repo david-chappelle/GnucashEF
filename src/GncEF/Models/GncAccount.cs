@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace GncEF.Models
+﻿namespace GncEF.Models
 {
 	public class GncAccount
 	{

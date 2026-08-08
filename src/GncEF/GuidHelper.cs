@@ -1,5 +1,4 @@
-﻿using System;
-namespace GncEF
+﻿namespace GncEF
 {
 	public static class GuidHelper
 	{

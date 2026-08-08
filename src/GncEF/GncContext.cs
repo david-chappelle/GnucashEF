@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GncEF
 {
-	public class GncContext : DbContext
+	public class GncContext(string databaseFile) : DbContext
 	{
 		public DbSet<GncAccount> Accounts { get; set; }
 		public DbSet<GncCommodity> Commodities { get; set; }
@@ -18,12 +18,7 @@ namespace GncEF
 		public DbSet<GncVersion> Versions { get; set; }
 		public DbSet<GncBook> Books { get; set; }
 
-		public string DatabaseFile { get; private set; }
-
-		public GncContext(string databaseFile)
-		{
-			DatabaseFile = databaseFile;
-		}
+		public string DatabaseFile { get; } = databaseFile;
 
 		protected override void OnConfiguring(DbContextOptionsBuilder opt)
 		{

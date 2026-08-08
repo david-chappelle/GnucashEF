@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GncEF.Models
+﻿namespace GncEF.Models
 {
 	public class GncPrice
 	{

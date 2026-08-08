@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GncEF.Models
+﻿namespace GncEF.Models
 {
 	public class GncLot
 	{

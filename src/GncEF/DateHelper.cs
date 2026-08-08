@@ -1,19 +1,15 @@
-﻿using System;
+﻿namespace GncEF;
 
-namespace GncEF
+public static class DateHelper
 {
-	public static class DateHelper
+	// ReSharper disable once InconsistentNaming
+	public static DateOnly? FromYYYYMMDD(this string d)
 	{
-		public static DateOnly? FromYYYYMMDD(this string d)
-		{
-			DateOnly r;
-			return DateOnly.TryParseExact(d, "yyyyMMdd", out r) ? r : null;
-		}
+		return DateOnly.TryParseExact(d, "yyyyMMdd", out var r) ? r : null;
+	}
 
-		public static DateTime? FromNormalDT(this string d)
-		{
-			DateTime dt;
-			return DateTime.TryParse(d, out dt) ? dt : null;
-		}
+	public static DateTime? FromNormalDateTime(this string d)
+	{
+		return DateTime.TryParse(d, out var dt) ? dt : null;
 	}
 }
