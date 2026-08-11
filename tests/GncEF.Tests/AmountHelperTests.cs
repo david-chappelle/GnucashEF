@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using GncEF;
+using GncEF.Models;
 
 namespace GncEF.Tests;
 
@@ -8,50 +9,54 @@ public class AmountHelperTests
     [Fact]
     public void TestAddNoDenominator()
     {
-        var a = (num: 1L, denom: 2L);
-        var b = (num: 1L, denom: 3L);
+        var a = new Ratio(1,2);
+        var b = new Ratio(1,3);
 
-        var sum = a.Add(b);
-        Assert.Equal((5L, 6L), sum);        
+        var sum = a + b;
+        Assert.Equal(new Ratio(5, 6), sum);        
     }
 
     [Fact]
     public void TestAddNoDenominator2()
     {
-        var a = (num: 1L, denom: 10L);
-        var b = (num: 7L, denom: 100L);
+        var a = new Ratio(1, 10);
+        var b = new Ratio(7, 100);
 
-        var sum = a.Add(b);
-        Assert.Equal((17L, 100L), sum);        
+        var sum = a+b;
+        var expectedSum = new Ratio(17, 100);
+        Assert.Equal(expectedSum, sum);        
     }
 
     [Fact]
     public void TestAddWithDenominatorNoNormalize()
     {
-        var a = (num: 1L, denom: 10L);
-        var b = (num: 7L, denom: 100L);
+        var a = new Ratio(1, 10);
+        var b = new Ratio(7, 100);
 
-        var sum = a.Add(b, desiredDenominator: 100L);
-        Assert.Equal((17L, 100L), sum);        
+        var sum = Ratio.Add(a, b, desiredDenominator: 100L);
+        var expectedSum = new Ratio(17, 100);
+        Assert.Equal(expectedSum, sum);        
     }
 
     [Fact]
     public void TestAddWithDenominatorNormalizeNoRemainder()
     {
-        var a = (num: 1L, denom: 10L);
-        var b = (num: 10L, denom: 100L);
+        var a = new Ratio(1, 10);;
+        var b = new Ratio(10, 100);
 
-        var sum = a.Add(b, desiredDenominator: 100L);
-        Assert.Equal((20L, 100L), sum);        
+        var sum = Ratio.Add(a, b, desiredDenominator: 100L);
+        var expectedSum = new Ratio(20, 100);
+        Assert.Equal(expectedSum, sum);        
     }
 
     [Fact]
     public void TestAddWithDenominatorNormalizeWithRemainder()
     {
-        var a = (num: 17L, denom: 10L);
-        var b = (num: 12L, denom: 100L);
+        var a = new Ratio(17, 10);
+        var b = new Ratio(12, 100);
 
-        var sum = a.Add(b, desiredDenominator: 100L);
-        Assert.Equal((182L, 100L), sum);        
+        var sum = Ratio.Add(a, b, desiredDenominator: 100L);
+        var expectedSum = new Ratio(182, 100);
+        Assert.Equal(expectedSum, sum);        
     }    
 }
