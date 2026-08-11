@@ -15,10 +15,10 @@
 		public long QuantityDenominator { get; set; }
 		public string LotId { get; set; }
 
-		public decimal Value => decimal.Divide(ValueNumerator, ValueDenominator);
-		public decimal Quantity => decimal.Divide(QuantityNumerator, QuantityDenominator);
-		public (long num, long denom) ValueRatio => (ValueNumerator, ValueDenominator);
-		public (long num, long denom) QuantityRatio => (QuantityNumerator, QuantityDenominator);
+		public decimal Value => ValueRatio.ToDecimal();
+		public decimal Quantity => QuantityRatio.ToDecimal();
+		public Ratio ValueRatio => new Ratio(ValueNumerator, ValueDenominator);
+		public Ratio QuantityRatio => new Ratio(QuantityNumerator, QuantityDenominator);
 		public GncActionType? Action => ActionName switch
 		{
 			ACTION_SELL => GncActionType.Sell,

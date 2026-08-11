@@ -30,7 +30,7 @@ namespace GncEF
 			return account;
 		}
 
-		public static IEnumerable<GncAccount> AccountRecursive(this GncContext db, string rootAccountPath)
+		public static IEnumerable<GncAccount> AccountRecursive(this GncContext db, string rootAccountPath, bool matchingCommodityOnly = true)
 		{
 			var accounts = new List<GncAccount>();
 			var rootAccount = db.AccountFromAbsolutePath(rootAccountPath);
@@ -38,18 +38,23 @@ namespace GncEF
 				return Array.Empty<GncAccount>();
 
 			accounts.Add(rootAccount);
-			db.getChildAccounts(rootAccount, accounts);
+
+			var commodityFilter = matchingCommodityOnly ? rootAccount.Commodity : null;
+			db.getChildAccounts(rootAccount, accounts, commodityFilter);
 
 			return accounts;
 		}
 
-		private static void getChildAccounts(this GncContext db, GncAccount parentAccount, List<GncAccount> accounts)
+		private static void getChildAccounts(this GncContext db, GncAccount parentAccount, List<GncAccount> accounts, GncCommodity commodityFilter = null)
 		{
 			if (parentAccount == null)
 				return;
 
 			foreach (var account in parentAccount.ChildAccounts.ToArray())
 			{
+				if (commodityFilter != null && account.Commodity != commodityFilter)
+					continue;
+				
 				accounts.Add(account);
 				db.getChildAccounts(account, accounts);
 			}
@@ -75,12 +80,28 @@ namespace GncEF
 			return accountId;
 		}
 
-		public static (long num, long denom) GetAccountValue(this GncContext context, GncAccount account, DateOnly? asOfDate = null)
+		/// <summary>
+		/// Get an account's value
+		/// </summary>
+		/// <param name="context">Database context</param>
+		/// <param name="account">Account to inspect</param>
+		/// <param name="asOfDate">As of this date, or null to look at all transactions</param>
+		/// <returns></returns>
+		public static Ratio GetAccountValue(this GncContext context, GncAccount account, DateOnly? asOfDate = null, bool includeSubaccounts = false)
 		{
-			return context.GetAccountValueChange(account, null, asOfDate);
+			// Current value is the amount of change from before the first transaction (0) to the given date
+			return context.GetAccountValueChange(account, null, asOfDate, includeSubaccounts);
 		}
 
-		public static (long num, long denom) GetAccountValueChange(this GncContext context, GncAccount account, DateOnly? startDate = null, DateOnly? endDate = null)
+		/// <summary>
+		/// Get the change in value for an account for a given date range
+		/// </summary>
+		/// <param name="context">Database context</param>
+		/// <param name="account">Account to inspect</param>
+		/// <param name="startDate">Beginning of date range, or null to start with the first transaction</param>
+		/// <param name="endDate">End of date range, or null to end with the last transaction</param>
+		/// <returns></returns>
+		public static Ratio GetAccountValueChange(this GncContext context, GncAccount account, DateOnly? startDate = null, DateOnly? endDate = null, bool includeSubaccounts = false)
 		{
 			DateTime? start = startDate.HasValue ? new DateTime(startDate.Value, new TimeOnly(0,0,0)) : null;
 			DateTime? end = endDate.HasValue ? new DateTime(endDate.Value.AddDays(1), new TimeOnly(0,0,0)) : null;
@@ -92,9 +113,15 @@ namespace GncEF
 				.OrderBy(s => s.Transaction.PostDate)
 				.AsNoTracking();
 
-			(long num, long denom) total = (0, account.CommodityFraction);
+			var total = new Ratio(0, account.CommodityFraction);
 			foreach (var s in filteredSplits)
-				total = AmountHelper.Add(total, (s.ValueNumerator, s.ValueDenominator));
+				total += s.ValueRatio;
+
+			if (includeSubaccounts)
+			{
+				foreach (var childAccount in account.ChildAccounts.Where(a => a.Commodity == account.Commodity))
+					total += context.GetAccountValueChange(childAccount, startDate, endDate, true);
+			}
 
 			return total;
 		}

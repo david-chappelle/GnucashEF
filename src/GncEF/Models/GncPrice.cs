@@ -10,8 +10,8 @@
 		public string Type { get; set; }
 		public long ValueNumerator { get; set; }
 		public long ValueDenominator { get; set; }
-
-		public decimal Value => decimal.Divide(ValueNumerator, ValueDenominator);
+		public Ratio ValueRatio => new Ratio(ValueNumerator, ValueDenominator);
+		public decimal Value => ValueRatio.ToDecimal();
 
 		public virtual GncCommodity Commodity { get; set; }
 		public virtual GncCommodity Currency { get; set; }
