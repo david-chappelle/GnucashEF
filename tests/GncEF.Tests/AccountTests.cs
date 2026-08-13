@@ -45,7 +45,7 @@ public class AccountTests : IDisposable
         var accountDining = _db.AccountFromAbsolutePath("Expenses:Dining");
         Assert.NotNull(accountDining);
         var amtSpent = _db.GetAccountValueChange(accountDining, startDate, endDate);
-        Assert.True(expectedSpending.IsEquivalentTo(amtSpent));;
+        Assert.Equal(expectedSpending, amtSpent);
 
         var accountCard = _db.AccountFromAbsolutePath("Liabilities:Credit Card");
         Assert.NotNull(accountCard);

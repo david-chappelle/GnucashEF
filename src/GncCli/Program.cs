@@ -97,7 +97,9 @@ internal class Program
         var isRecursive = result.GetValue(_recursiveOption);
 
         var gncAccount = _db.AccountFromAbsolutePath(accountName);
-        var amt = _db.GetAccountValueChange(gncAccount, _startDate, _endDate, isRecursive);
-        Console.WriteLine($"{amt.ToDecimal():F2}");
+        var usdCurrency = _db.GetUsdCurrency();
+        var amt = _db.GetAccountValueChange(gncAccount, _startDate, _endDate, isRecursive, usdCurrency);
+        //Console.WriteLine($"{amt.ToDecimal():F2}");
+        Console.WriteLine(amt.ToUsdString());
     }
 }

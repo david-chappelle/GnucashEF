@@ -100,27 +100,67 @@ namespace GncEF
 		/// <param name="account">Account to inspect</param>
 		/// <param name="startDate">Beginning of date range, or null to start with the first transaction</param>
 		/// <param name="endDate">End of date range, or null to end with the last transaction</param>
-		/// <returns></returns>
-		public static Ratio GetAccountValueChange(this GncContext context, GncAccount account, DateOnly? startDate = null, DateOnly? endDate = null, bool includeSubaccounts = false)
+		/// <param name="includeSubaccounts">Whether to include subaccounts.  Only gets value of subaccounts of the same currency.</param>
+		/// <param name="desiredCommodity">The commodity/currency to return.  If this is not the same as <paramref name="account.Commodity"/>, then use the most recent Price to convert.</param>
+		/// <returns>The change in value of the account</returns>
+		public static Ratio GetAccountValueChange(
+			this GncContext context,
+			GncAccount account,
+			DateOnly? startDate = null,
+			DateOnly? endDate = null,
+			bool includeSubaccounts = false,
+			GncCommodity desiredCommodity = null)
 		{
+			bool ignoreAccount = false;
+			Ratio? price = null;
+			
+			if (desiredCommodity != null && account.Commodity != desiredCommodity)
+			{
+				// the account doesn't use our desired currency
+				// look for a price to convert it
+				price = context.Prices
+					.AsNoTracking()
+					.Where(p => p.Currency == desiredCommodity && p.Commodity == account.Commodity)
+					.OrderByDescending(p => p.Date)
+					.Select(p => (Ratio?) new Ratio(p.ValueNumerator, p.ValueDenominator))
+					.FirstOrDefault();
+				if (price is null)
+				{
+
+					// no price found, so ignore this account's transactions
+					ignoreAccount = true;
+				}
+			}
+			
 			DateTime? start = startDate.HasValue ? new DateTime(startDate.Value, new TimeOnly(0,0,0)) : null;
 			DateTime? end = endDate.HasValue ? new DateTime(endDate.Value.AddDays(1), new TimeOnly(0,0,0)) : null;
-
-			var filteredSplits = context.Splits
-				.Where(s => s.AccountId == account.AccountId &&
-					(!start.HasValue || s.Transaction.PostDate >= start) &&
-					(!end.HasValue || s.Transaction.PostDate < end))
-				.OrderBy(s => s.Transaction.PostDate)
-				.AsNoTracking();
-
 			var total = new Ratio(0, account.CommodityFraction);
-			foreach (var s in filteredSplits)
-				total += s.ValueRatio;
 
+			if (!ignoreAccount)
+			{
+				// get the splits for this account, applying date filter
+				var filteredSplits = context.Splits
+					.Where(s => s.AccountId == account.AccountId &&
+					            (!start.HasValue || s.Transaction.PostDate >= start) &&
+					            (!end.HasValue || s.Transaction.PostDate < end))
+					.OrderBy(s => s.Transaction.PostDate)
+					.AsNoTracking();
+				
+				foreach (var s in filteredSplits)
+					total += s.QuantityRatio;
+
+				if (price is not null)
+				{
+					// need to convert to our desired commodity price, rounding if necessary
+					total = (total * price.Value).Normalize(desiredCommodity.Fraction, true);
+				}
+			}
+
+			// TODO: decide if we really want to look at subaccounts if the parent account was skipped
 			if (includeSubaccounts)
 			{
-				foreach (var childAccount in account.ChildAccounts.Where(a => a.Commodity == account.Commodity))
-					total += context.GetAccountValueChange(childAccount, startDate, endDate, true);
+				foreach (var childAccount in account.ChildAccounts)
+					total += context.GetAccountValueChange(childAccount, startDate, endDate, true, desiredCommodity);
 			}
 
 			return total;
