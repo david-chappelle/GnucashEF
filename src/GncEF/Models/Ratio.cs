@@ -23,6 +23,8 @@ public readonly record struct Ratio(long Numerator, long Denominator)
     public static Ratio operator +(Ratio a, Ratio b) => Add(a, b);
     public static Ratio operator -(Ratio a, Ratio b) => Subtract(a, b);
     public static Ratio operator *(Ratio a, Ratio b) => Multiply(a, b);
+    public static Ratio operator /(Ratio a, Ratio b) => Divide(a, b);
+    public static Ratio operator -(Ratio a) => a with { Numerator = -a.Numerator };
     
     public static Ratio ParseUsd(string amt)
     {
@@ -37,10 +39,11 @@ public readonly record struct Ratio(long Numerator, long Denominator)
         {
             // convert to a ratio of integers
             long num = long.Parse(trimmedAmt.Replace(".", string.Empty));
-            long denom = 1;
-            for (int i = 0; i < trimmedAmt.Length - ndx - 1; i++)
-                denom *= 10;
-            ratio = new Ratio(num, denom);
+            int pow = trimmedAmt.Length - ndx - 1;
+            if (pow > PowersOfTen.Length - 1)
+                throw new ArgumentException("Fraction too many digits");
+
+            ratio = new Ratio(num, PowersOfTen[pow]);
         }
         else
         {
@@ -48,6 +51,7 @@ public readonly record struct Ratio(long Numerator, long Denominator)
             ratio = new Ratio(long.Parse(trimmedAmt), 1);
         }
 
+        // make base 100 without rounding in case we're given $1,384.5400
         return ratio.Normalize(100);
     }
     
@@ -77,23 +81,18 @@ public readonly record struct Ratio(long Numerator, long Denominator)
 
     public static Ratio Subtract(Ratio a, Ratio b, long? desiredDenominator = null, bool allowRoundoffError = false)
     {
-        Ratio sum;
-        if (a.Denominator == b.Denominator)
-            sum = a with { Numerator = a.Numerator - b.Numerator };
-        else
-        {
-            var lcm = LCM(a.Denominator, b.Denominator);
-            var outNum = ((lcm / a.Denominator) * a.Numerator) - ((lcm / b.Denominator) * b.Numerator);
-
-            sum = new Ratio(outNum, lcm);
-        }
-
-        return sum.Normalize(desiredDenominator, allowRoundoffError);
+        return Add(a,-b,desiredDenominator,allowRoundoffError);
     }
 
     public static Ratio Multiply(Ratio a, Ratio b, long? desiredDenominator = null, bool allowRoundoffError = false)
     {
         return new Ratio(checked(a.Numerator * b.Numerator), checked(a.Denominator * b.Denominator))
+            .Normalize(desiredDenominator, allowRoundoffError);
+    }
+    
+    public static Ratio Divide(Ratio a, Ratio b, long? desiredDenominator = null, bool allowRoundoffError = false)
+    {
+        return new Ratio(checked(a.Numerator * b.Denominator), checked(a.Denominator * b.Numerator))
             .Normalize(desiredDenominator, allowRoundoffError);
     }
 
@@ -146,23 +145,9 @@ public readonly record struct Ratio(long Numerator, long Denominator)
         return new Ratio(newNumerator, newDenominator);
     }
     
-    public bool IsEquivalentTo(Ratio other)
-    {
-        // check for exact equivalence
-        if (this.Numerator == other.Numerator && this.Denominator == other.Denominator)
-            return true;
-        
-        // check for equivalence using cross multiplication
-        return Numerator * other.Denominator == other.Numerator * Denominator;        
-    }
-    
     public bool IsOppositeOf(Ratio other)
     {
-        if (Numerator == -other.Numerator && Denominator == other.Denominator)
-            return true;
-            
-        // check for negation using cross-multiplication
-        return Numerator * other.Denominator == -other.Numerator * Denominator;
+        return this == -other;
     }
 
     public string ToUsdString()
@@ -215,4 +200,26 @@ public readonly record struct Ratio(long Numerator, long Denominator)
         
         return n == 1 ? p : null;
     }
+    
+    private static readonly long[] PowersOfTen = [
+        1, // 10^0 = 1
+        10, // 10^1 = 10
+        100, // 10^2 = 100
+        1000, // 10^3 = 1,000
+        10000, // 10^4 = 10,000
+        100000, // 10^5 = 100,000
+        1000000, // 10^6 = 1,000,000
+        10000000, // 10^7 = 10,000,000
+        100000000, // 10^8 = 100,000,000
+        1000000000, // 10^9 = 1,000,000,000
+        10000000000, // 10^10 = 10,000,000,000
+        100000000000, // 10^11 = 100,000,000,000
+        1000000000000, // 10^12 = 1,000,000,000,000
+        10000000000000, // 10^13 = 10,000,000,000,000
+        100000000000000, // 10^14 = 100,000,000,000,000
+        1000000000000000, // 10^15 = 1,000,000,000,000,000
+        10000000000000000, // 10^16 = 10,000,000,000,000,000
+        100000000000000000, // 10^17 = 100,000,000,000,000,000
+        1000000000000000000, // 10^18 = 1,000,000,000,000,000,000
+    ];    
 };
